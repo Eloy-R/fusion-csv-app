@@ -60,7 +60,7 @@ if files:
                 colonnes_reference = list(df.columns)
 
             # Ajouter colonne source (sans .csv)
-            df["source"] = file.name.replace(".csv", "")
+            # df["source"] = file.name.replace(".csv", "")
 
             df_list.append(df)
 
