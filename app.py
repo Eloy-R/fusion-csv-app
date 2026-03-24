@@ -50,7 +50,7 @@ if files:
             sep = detect_separator(file)
 
             # Lecture fichier
-            df = pd.read_csv(file, sep=sep, encoding="utf-8", engine="python")
+            df = pd.read_csv(file, sep=sep, encoding="utf-8", dtype=str, engine="python")
 
             # Nettoyage noms de colonnes
             df.columns = df.columns.str.strip()
