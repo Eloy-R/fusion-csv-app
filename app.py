@@ -41,6 +41,8 @@ def detect_separator(file):
 def convert_date_in_text(value):
     if isinstance(value, str):
         return re.sub(r"\b(\d{2})-(\d{2})-(\d{4})\b", r"\1/\2/\3", value)
+    # format dd-mm-yy → on ajoute 20 devant l'année
+        value = re.sub(r"\b(\d{2})-(\d{2})-(\d{2})\b", r"\1/\2/20\3", value)
     return value
 
 # -----------------------------
