@@ -74,7 +74,7 @@ if files:
 
             # Conversion des dates (optionnelle)
             if convert_dates:
-                df = df.applymap(convert_date_in_text)
+                df = df.apply(lambda col: col.map(convert_date_in_text))
 
             # Définir les colonnes de référence (premier fichier)
             if colonnes_reference is None:
