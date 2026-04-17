@@ -1,7 +1,9 @@
+```python
 import streamlit as st
 import pandas as pd
 import io
 import csv
+import re
 
 # -----------------------------
 # CONFIG
@@ -15,6 +17,14 @@ st.set_page_config(
 st.title("Fusionner CSV")
 
 # -----------------------------
+# CHECKBOX OPTIONS
+# -----------------------------
+convert_dates = st.checkbox(
+    "📅 Convertir les dates (dd-mm-yyyy → dd/mm/yyyy)",
+    value=True
+)
+
+# -----------------------------
 # FONCTION : détection séparateur
 # -----------------------------
 def detect_separator(file):
@@ -25,6 +35,14 @@ def detect_separator(file):
     except:
         sep = ";"
     return sep
+
+# -----------------------------
+# FONCTION : conversion dates
+# -----------------------------
+def convert_date_in_text(value):
+    if isinstance(value, str):
+        return re.sub(r"\b(\d{2})-(\d{2})-(\d{4})\b", r"\1/\2/\3", value)
+    return value
 
 # -----------------------------
 # UPLOAD
@@ -55,11 +73,15 @@ if files:
             # Nettoyage noms de colonnes
             df.columns = df.columns.str.strip()
 
+            # Conversion des dates (optionnelle)
+            if convert_dates:
+                df = df.applymap(convert_date_in_text)
+
             # Définir les colonnes de référence (premier fichier)
             if colonnes_reference is None:
                 colonnes_reference = list(df.columns)
 
-            # Ajouter colonne source (sans .csv)
+            # Ajouter colonne source (si besoin)
             # df["source"] = file.name.replace(".csv", "")
 
             df_list.append(df)
@@ -89,7 +111,7 @@ if files:
 
         df_final = df_final[colonnes_finales]
 
-        # Remplacer NaN par vide (important pour import)
+        # Remplacer NaN par vide
         df_final = df_final.fillna("")
 
         st.success(f"✅ {len(df_list)} fichiers fusionnés")
@@ -103,7 +125,7 @@ if files:
         st.write("Dimensions :", df_final.shape)
 
         # -----------------------------
-        # EXPORT CSV (format compatible)
+        # EXPORT CSV
         # -----------------------------
         csv_export = df_final.to_csv(index=False, sep=";").encode("utf-8")
 
@@ -115,7 +137,7 @@ if files:
         )
 
         # -----------------------------
-        # EXPORT EXCEL (option bonus)
+        # EXPORT EXCEL
         # -----------------------------
         excel_buffer = io.BytesIO()
         with pd.ExcelWriter(excel_buffer, engine="xlsxwriter") as writer:
